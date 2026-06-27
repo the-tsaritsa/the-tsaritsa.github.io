@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tsaritsa Countdown</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+</head>
+<body>
+    <div class="poster-overlay" id="poster"></div>
+    
+    <div class="video-bg">
+        <video id="bg-video" autoplay loop playsinline muted>
+            <source src="media/video.mp4" type="video/mp4">
+        </video>
+    </div>
+    
+    <div class="dark-overlay"></div>
+    
+    <div class="content">
+        <h1 class="main-title">Her Majesty The Tsaritsa Arrives In:</h1>
+        
+        <div class="countdown-container">
+            <div class="countdown" id="countdown">
+                <div class="countdown-item">
+                    <span class="countdown-value" id="days">000</span>
+                    <span class="countdown-label">Days</span>
+                </div>
+                <div class="countdown-item">
+                    <span class="countdown-value" id="hours">00</span>
+                    <span class="countdown-label">Hours</span>
+                </div>
+                <div class="countdown-item">
+                    <span class="countdown-value" id="minutes">00</span>
+                    <span class="countdown-label">Minutes</span>
+                </div>
+                <div class="countdown-item">
+                    <span class="countdown-value" id="seconds">00</span>
+                    <span class="countdown-label">Seconds</span>
+                </div>
+            </div>
+            <p class="release-date" id="release-date"></p>
+        </div>
+    </div>
+    
+    <div class="timeline-container">
+        <div class="patch-timeline">
+            <h3 class="timeline-title">Patch Timeline</h3>
+            <div class="timeline-track" id="timeline-track">
+                <div class="timeline-node current">
+                    <div class="node-circle"><div class="node-inner"></div></div>
+                    <span class="node-label">
+                        <span class="patch-version">6.6</span>
+                        <span class="patch-date">May 27</span>
+                    </span>
+                </div>
+                <div class="timeline-node">
+                    <div class="node-circle"><div class="node-inner"></div></div>
+                    <span class="node-label">
+                        <span class="patch-version">6.7</span>
+                        <span class="patch-date">Jul 1</span>
+                    </span>
+                </div>
+                <div class="timeline-node">
+                    <div class="node-circle"><div class="node-inner"></div></div>
+                    <span class="node-label">
+                        <span class="patch-version">7.0</span>
+                        <span class="patch-date">Aug 12</span>
+                    </span>
+                </div>
+                <div class="timeline-node">
+                    <div class="node-circle"><div class="node-inner"></div></div>
+                    <span class="node-label">
+                        <span class="patch-version">7.1</span>
+                        <span class="patch-date">Sep 23</span>
+                    </span>
+                </div>
+                <div class="timeline-node">
+                    <div class="node-circle"><div class="node-inner"></div></div>
+                    <span class="node-label">
+                        <span class="patch-version">7.2</span>
+                        <span class="patch-date">Nov 4</span>
+                    </span>
+                </div>
+                <div class="timeline-node target">
+                    <div class="node-circle"><div class="node-inner"></div></div>
+                    <span class="node-label">
+                        <span class="patch-version">7.3</span>
+                        <span class="patch-date">Dec 16</span>
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="media-controls">
+        <button class="control-btn" id="toggle-audio">🔊 Toggle Audio</button>
+        <button class="control-btn" id="toggle-video">🎬 Toggle Video</button>
+    </div>
+
+    <audio id="background-audio" loop style="display:none;">
+        <source src="media/music.mp3" type="audio/mpeg">
+    </audio>
+
+    <script src="js/main.js"></script>
+</body>
+</html>
