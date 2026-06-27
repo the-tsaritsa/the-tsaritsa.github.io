@@ -77,7 +77,7 @@ document.addEventListener('DOMContentLoaded', () => {
     audio.volume = 0.3;
 
     video.addEventListener('canplaythrough', () => {
-        poster.classList.add('hidden');
+        poster.style.opacity = '0';
     });
 
     const audioBtn = document.getElementById('toggle-audio');
