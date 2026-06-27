@@ -53,7 +53,7 @@ body {
     height: 100%;
     background: url('../media/poster.jpeg') center 20%/cover no-repeat;
     transition: opacity 1.5s ease-out;
-    z-index: 0;
+    z-index: 5;
 }
 
 .poster-overlay.hidden {
