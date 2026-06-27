@@ -110,8 +110,10 @@ document.addEventListener('DOMContentLoaded', () => {
     videoBtn.addEventListener('click', () => {
         if (videoVisible) {
             video.classList.add('hidden');
+            poster.style.opacity = '1';
         } else {
             video.classList.remove('hidden');
+            poster.style.opacity = '0';
         }
         videoVisible = !videoVisible;
     });
