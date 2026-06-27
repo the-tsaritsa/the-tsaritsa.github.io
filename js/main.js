@@ -41,7 +41,7 @@ function updateReleaseDate() {
     const target = patchDates[currentPatch];
     const options = { year: 'numeric', month: 'long', day: 'numeric' };
     document.getElementById('release-date').textContent = 
-        target.toLocaleDateString('en-US', options);
+        target.toLocaleDateString('en-US', options) + ' (STC)';
 }
 
 function updateTimeline() {
