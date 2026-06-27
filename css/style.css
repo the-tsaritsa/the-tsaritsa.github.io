@@ -24,7 +24,7 @@ body {
     left: 0;
     width: 100%;
     height: 100%;
-    z-index: 1;
+    z-index: 0;
 }
 
 .video-bg video {
@@ -53,7 +53,7 @@ body {
     height: 100%;
     background: url('../media/poster.jpeg') center 20%/cover no-repeat;
     transition: opacity 1.5s ease-out;
-    z-index: 5;
+    z-index: 1;
 }
 
 .poster-overlay.hidden {
