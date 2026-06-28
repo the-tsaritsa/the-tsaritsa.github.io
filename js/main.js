@@ -97,7 +97,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Try to autoplay audio
     audio.play().then(() => {
         audioPlaying = true;
-        audioBtn.textContent = '🔇 Toggle Audio';
+        audioBtn.textContent = '🔇';
     }).catch(() => {
         audioPlaying = false;
     });
@@ -105,12 +105,12 @@ document.addEventListener('DOMContentLoaded', () => {
     audioBtn.addEventListener('click', () => {
         if (audioPlaying) {
             audio.pause();
-            audioBtn.textContent = '🔊 Toggle Audio';
+            audioBtn.textContent = '🔊';
             audioPlaying = false;
         } else {
             audio.play().then(() => {
                 audioPlaying = true;
-                audioBtn.textContent = '🔇 Toggle Audio';
+                audioBtn.textContent = '🔇';
             });
         }
     });
@@ -138,7 +138,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (localStorage.getItem('audioEnabled') === 'true') {
         audio.play().then(() => {
             audioPlaying = true;
-            audioBtn.textContent = '🔇 Toggle Audio';
+            audioBtn.textContent = '🔇';
         }).catch(() => {
             audioPlaying = false;
         });
