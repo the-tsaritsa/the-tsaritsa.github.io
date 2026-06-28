@@ -76,7 +76,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const audio = document.getElementById('background-audio');
     audio.volume = 0.3;
 
+    let posterTimeout = setTimeout(hidePoster, 5000);
+
     const hidePoster = () => {
+        clearTimeout(posterTimeout);
         poster.style.opacity = '0';
     };
 
@@ -87,9 +90,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (video.readyState >= 3) {
         hidePoster();
     }
-
-    // Fallback: hide poster after 5 seconds if video doesn't fire event
-    setTimeout(hidePoster, 5000);
 
     const audioBtn = document.getElementById('toggle-audio');
     let audioPlaying = false;
