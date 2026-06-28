@@ -76,7 +76,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const audio = document.getElementById('background-audio');
     audio.volume = 0.3;
 
+  let posterHidden = false;
+
     const hidePoster = () => {
+        if (posterHidden) return;
+        posterHidden = true;
         clearTimeout(posterTimeout);
         poster.style.opacity = '0';
     };
