@@ -5,7 +5,7 @@ let particles = [];
 let animationId;
 
 const config = {
-    particleCount: 80,
+    particleCount: 40,
     maxSpeed: 1.5,
     minSpeed: 0.3,
     maxSize: 4,
