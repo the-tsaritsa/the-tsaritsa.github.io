@@ -76,12 +76,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const audio = document.getElementById('background-audio');
     audio.volume = 0.3;
 
-    let posterTimeout = setTimeout(hidePoster, 5000);
-
     const hidePoster = () => {
         clearTimeout(posterTimeout);
         poster.style.opacity = '0';
     };
+
+    let posterTimeout = setTimeout(hidePoster, 5000);
 
     // Use canplay instead of canplaythrough for faster response
     video.addEventListener('canplay', hidePoster);
