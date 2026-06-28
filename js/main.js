@@ -76,9 +76,20 @@ document.addEventListener('DOMContentLoaded', () => {
     const audio = document.getElementById('background-audio');
     audio.volume = 0.3;
 
-    video.addEventListener('canplaythrough', () => {
+    const hidePoster = () => {
         poster.style.opacity = '0';
-    });
+    };
+
+    // Use canplay instead of canplaythrough for faster response
+    video.addEventListener('canplay', hidePoster);
+
+    // If video is already loaded, hide poster immediately
+    if (video.readyState >= 3) {
+        hidePoster();
+    }
+
+    // Fallback: hide poster after 5 seconds if video doesn't fire event
+    setTimeout(hidePoster, 5000);
 
     const audioBtn = document.getElementById('toggle-audio');
     let audioPlaying = false;
