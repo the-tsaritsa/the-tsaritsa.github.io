@@ -81,14 +81,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const hidePoster = () => {
         if (posterHidden) return;
         posterHidden = true;
-        clearTimeout(posterTimeout);
         poster.style.opacity = '0';
     };
 
-    let posterTimeout = setTimeout(hidePoster, 5000);
-
-    // Use canplay instead of canplaythrough for faster response
     video.addEventListener('canplay', hidePoster);
+    video.addEventListener('playing', hidePoster);
 
     // If video is already loaded, hide poster immediately
     if (video.readyState >= 3) {
