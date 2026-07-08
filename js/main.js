@@ -1,14 +1,14 @@
 const patchDates = {
-    '7.3': new Date('2026-12-16T00:00:00Z')
+    '7.3': new Date('2026-12-16T04:00:00Z')
 };
 
 const timelinePatches = [
-    { id: '6.6', date: new Date('2026-05-27T00:00:00Z') },
-    { id: '6.7', date: new Date('2026-07-01T00:00:00Z') },
-    { id: '7.0', date: new Date('2026-08-12T00:00:00Z') },
-    { id: '7.1', date: new Date('2026-09-23T00:00:00Z') },
-    { id: '7.2', date: new Date('2026-11-04T00:00:00Z') },
-    { id: '7.3', date: new Date('2026-12-16T00:00:00Z') }
+    { id: '6.6', date: new Date('2026-05-27T04:00:00Z') },
+    { id: '6.7', date: new Date('2026-07-01T04:00:00Z') },
+    { id: '7.0', date: new Date('2026-08-12T04:00:00Z') },
+    { id: '7.1', date: new Date('2026-09-23T04:00:00Z') },
+    { id: '7.2', date: new Date('2026-11-04T04:00:00Z') },
+    { id: '7.3', date: new Date('2026-12-16T04:00:00Z') }
 ];
 
 let currentPatch = '7.3';
