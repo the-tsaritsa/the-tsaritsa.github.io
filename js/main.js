@@ -1,152 +1,373 @@
-const patchDates = {
-    '7.3': new Date('2026-12-16T04:00:00Z')
-};
+(function () {
+  'use strict';
 
-const timelinePatches = [
-    { id: '6.6', date: new Date('2026-05-27T04:00:00Z') },
-    { id: '6.7', date: new Date('2026-07-01T04:00:00Z') },
-    { id: '7.0', date: new Date('2026-08-12T04:00:00Z') },
-    { id: '7.1', date: new Date('2026-09-23T04:00:00Z') },
-    { id: '7.2', date: new Date('2026-11-04T04:00:00Z') },
-    { id: '7.3', date: new Date('2026-12-16T04:00:00Z') }
-];
+  const TARGET_DATE = Date.UTC(2026, 11, 16, 4, 0, 0);
 
-let currentPatch = '7.3';
+  const PATCHES = [
+    { version: '6.7', start: Date.UTC(2026, 6, 1), note: 'The long winter' },
+    { version: '7.0', start: Date.UTC(2026, 7, 12), note: 'Snezhnaya opens' },
+    { version: '7.1', start: Date.UTC(2026, 8, 23), note: 'The cold deepens' },
+    { version: '7.2', start: Date.UTC(2026, 10, 4), note: 'Storm gathers' },
+    { version: '7.3', start: Date.UTC(2026, 11, 16), note: 'The Tsaritsa arrives' }
+  ];
 
-function updateCountdown() {
-    const target = patchDates[currentPatch];
-    const now = new Date();
-    const diff = target - now;
+  const QUOTES = [
+    { text: 'Her Royal Highness the Tsaritsa is actually a gentle soul. Too gentle, in fact, and that\u2019s why she had to harden herself. Likewise, she declared war against the whole world only because she dreams of peace.', attribution: 'Tartaglia' },
+    { text: 'Everyone praises her for her kindness and benevolence, but they forget that love is also a form of sin. What if she\u2019s just trying to compensate for something?', attribution: 'The Wanderer' },
+    { text: 'When I was imprisoned, it was the Tsaritsa who pardoned me and gave me the title of Harbinger. I could sense she was a person of true sincerity and compassion, unlike all those pompous hypocrites with their posturing and rhetoric.', attribution: 'Arlecchino' },
+    { text: 'The first time I sang in the gardens of Zapolyarny Palace, the Tsaritsa happened to pass by. She stood there, silent and motionless, like a statue with no expression carved onto the face.', attribution: 'Columbina' },
+    { text: 'Even I still get bothered by the errors in my heart, but Her Majesty the Tsaritsa... How did she manage to freeze her emotions so completely?', attribution: 'Sandrone' },
+    { text: 'Although Nod-Krai is technically a part of Snezhnaya, you won\u2019t hear us habitually refer to "Her Majesty, the Tsaritsa." ...Who\u2019s "us"? Hehe... The Lightkeepers, of course... Who else?', attribution: 'Flins' },
+    { text: 'A tomb and birch trees, the Tsar\u2019s final tokens of affection. That which I set in motion, I shall see to an end.', attribution: 'Laws of the Bitter Frost' }
+  ];
+
+  const $ = (id) => document.getElementById(id);
+
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  const countdownEl = $('countdown');
+  const arrivedEl = $('arrived-message');
+  const eyebrowEl = document.querySelector('.countdown-eyebrow');
+  const units = {
+    days: $('cd-days'),
+    hours: $('cd-hours'),
+    minutes: $('cd-minutes'),
+    seconds: $('cd-seconds')
+  };
+
+  const pad = (n) => String(n).padStart(2, '0');
+
+  let lastValues = { days: -1, hours: -1, minutes: -1, seconds: -1 };
+  let arrived = false;
+
+  function setNum(el, value) {
+    const str = pad(value);
+    if (el.textContent !== str) {
+      el.classList.remove('flip');
+      void el.offsetWidth;
+      el.classList.add('flip');
+      el.textContent = str;
+    }
+  }
+
+  function updateCountdown() {
+    const now = Date.now();
+    const diff = TARGET_DATE - now;
 
     if (diff <= 0) {
-        document.getElementById('days').textContent = '000';
-        document.getElementById('hours').textContent = '00';
-        document.getElementById('minutes').textContent = '00';
-        document.getElementById('seconds').textContent = '00';
-        return;
+      if (!arrived) {
+        arrived = true;
+        eyebrowEl.textContent = 'The long winter is over';
+        countdownEl.hidden = true;
+        arrivedEl.hidden = false;
+      }
+      return;
     }
 
-    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-    const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-    const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+    const days = Math.floor(diff / 86400000);
+    const hours = Math.floor((diff % 86400000) / 3600000);
+    const minutes = Math.floor((diff % 3600000) / 60000);
+    const seconds = Math.floor((diff % 60000) / 1000);
 
-    document.getElementById('days').textContent = days.toString().padStart(3, '0');
-    document.getElementById('hours').textContent = hours.toString().padStart(2, '0');
-    document.getElementById('minutes').textContent = minutes.toString().padStart(2, '0');
-    document.getElementById('seconds').textContent = seconds.toString().padStart(2, '0');
-}
-
-function updateReleaseDate() {
-    const target = patchDates[currentPatch];
-    const options = { year: 'numeric', month: 'long', day: 'numeric' };
-    document.getElementById('release-date').textContent = 
-        target.toLocaleDateString('en-US', options) + ' (STC)';
-}
-
-function updateTimeline() {
-    const now = new Date();
-    const nodes = document.querySelectorAll('.timeline-node');
-    const track = document.getElementById('timeline-track');
-    
-    let currentIndex = 0;
-    for (let i = timelinePatches.length - 1; i >= 0; i--) {
-        if (now >= timelinePatches[i].date) {
-            currentIndex = i;
-            break;
-        }
+    if (days !== lastValues.days) {
+      setNum(units.days, days);
+      lastValues.days = days;
     }
+    if (hours !== lastValues.hours) {
+      setNum(units.hours, hours);
+      lastValues.hours = hours;
+    }
+    if (minutes !== lastValues.minutes) {
+      setNum(units.minutes, minutes);
+      lastValues.minutes = minutes;
+    }
+    if (seconds !== lastValues.seconds) {
+      setNum(units.seconds, seconds);
+      lastValues.seconds = seconds;
+    }
+  }
 
-    nodes.forEach((node, index) => {
-        node.classList.remove('current', 'passed');
-        if (index === currentIndex) {
-            node.classList.add('current');
-        } else if (index < currentIndex) {
-            node.classList.add('passed');
-        }
+  const body = document.body;
+  const video = $('bg-video');
+  const music = $('bg-music');
+  const musicBtn = $('music-toggle');
+  const videoBtn = $('video-toggle');
+
+  let videoFailed = false;
+
+  function showVideo() {
+    body.classList.add('video-ready');
+  }
+
+  video.addEventListener('canplaythrough', showVideo);
+  video.addEventListener('playing', showVideo);
+  video.addEventListener('canplay', function () {
+    if (video.paused) {
+      video.play().catch(function () {});
+    }
+  });
+
+  video.addEventListener('error', function () {
+    videoFailed = true;
+    video.removeAttribute('autoplay');
+    video.pause();
+    body.classList.add('video-off');
+    videoBtn.classList.add('muted');
+    videoBtn.setAttribute('aria-pressed', 'true');
+    videoBtn.setAttribute('aria-label', 'Video background unavailable');
+  }, true);
+
+  musicBtn.addEventListener('click', function () {
+    if (music.paused) {
+      music.play().catch(function () {});
+      musicBtn.classList.remove('muted');
+      musicBtn.setAttribute('aria-pressed', 'true');
+      musicBtn.setAttribute('aria-label', 'Pause music');
+    } else {
+      music.pause();
+      musicBtn.classList.add('muted');
+      musicBtn.setAttribute('aria-pressed', 'false');
+      musicBtn.setAttribute('aria-label', 'Play music');
+    }
+  });
+
+  videoBtn.addEventListener('click', function () {
+    if (videoFailed) return;
+    const off = body.classList.toggle('video-off');
+    if (off) {
+      videoBtn.classList.add('muted');
+      videoBtn.setAttribute('aria-pressed', 'true');
+      videoBtn.setAttribute('aria-label', 'Show video background');
+    } else {
+      videoBtn.classList.remove('muted');
+      videoBtn.setAttribute('aria-pressed', 'false');
+      videoBtn.setAttribute('aria-label', 'Hide video background');
+    }
+  });
+
+  const quoteText = $('quote-text');
+  const quoteAttr = $('quote-attribution');
+  let quoteIndex = 0;
+  let quoteOrder = [];
+
+  function shuffle(arr) {
+    const a = arr.slice();
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      const t = a[i];
+      a[i] = a[j];
+      a[j] = t;
+    }
+    return a;
+  }
+
+  function renderQuote(i) {
+    quoteText.textContent = quoteOrder[i].text;
+    quoteAttr.textContent = '\u2014 ' + quoteOrder[i].attribution;
+  }
+
+  function cycleQuote() {
+    quoteText.classList.add('is-hidden');
+    quoteAttr.classList.add('is-hidden');
+    setTimeout(function () {
+      quoteIndex = (quoteIndex + 1) % quoteOrder.length;
+      renderQuote(quoteIndex);
+      quoteText.classList.remove('is-hidden');
+      quoteAttr.classList.remove('is-hidden');
+    }, 800);
+  }
+
+  quoteOrder = shuffle(QUOTES);
+  renderQuote(0);
+  setInterval(cycleQuote, 7000);
+
+  const timelineEl = $('timeline');
+
+  function patchStatus(p, now) {
+    if (p.version === '7.3') return 'final';
+    return p.start <= now ? 'past' : 'future';
+  }
+
+  const SNOWFLAKE_SVG =
+    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" ' +
+    'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
+    '<line x1="12" y1="2" x2="12" y2="22"/>' +
+    '<line x1="4" y1="6.5" x2="20" y2="17.5"/>' +
+    '<line x1="20" y1="6.5" x2="4" y2="17.5"/>' +
+    '</svg>';
+
+  function buildTimeline() {
+    timelineEl.innerHTML = '';
+
+    const track = document.createElement('div');
+    track.className = 'road-track';
+
+    const stops = document.createElement('div');
+    stops.className = 'road-stops';
+
+    PATCHES.forEach(function (p) {
+      const stop = document.createElement('div');
+      stop.className = 'road-stop';
+      stop.dataset.version = p.version;
+
+      const version = document.createElement('span');
+      version.className = 'stop-version';
+      version.textContent = p.version;
+
+      const dot = document.createElement('span');
+      dot.className = 'stop-dot';
+      if (p.version === '7.3') {
+        dot.innerHTML = SNOWFLAKE_SVG;
+      }
+
+      const date = document.createElement('span');
+      date.className = 'stop-date';
+      const d = new Date(p.start);
+      const dateStr = d.toLocaleString('en-US', { month: 'short', day: 'numeric' });
+      date.textContent = p.version === '7.3'
+        ? dateStr + ', ' + d.getFullYear()
+        : dateStr;
+
+      stop.appendChild(version);
+      stop.appendChild(dot);
+      stop.appendChild(date);
+      stops.appendChild(stop);
     });
 
-    const progress = (currentIndex / (timelinePatches.length - 1)) * 100;
-    track.style.setProperty('--progress', `${progress}%`);
-}
+    timelineEl.appendChild(track);
+    timelineEl.appendChild(stops);
+    refreshTimelineStatus();
+  }
 
-document.addEventListener('DOMContentLoaded', () => {
-    const video = document.getElementById('bg-video');
-    const poster = document.getElementById('poster');
-    const audio = document.getElementById('background-audio');
-    audio.volume = 0.3;
+  function refreshTimelineStatus() {
+    const now = Date.now();
+    let currentIndex = -1;
+    PATCHES.forEach(function (p, i) {
+      if (p.start <= now) currentIndex = i;
+    });
 
-  let posterHidden = false;
+    const stops = timelineEl.querySelectorAll('.road-stop');
+    stops.forEach(function (stop) {
+      const p = PATCHES.find(function (x) { return x.version === stop.dataset.version; });
+      if (!p) return;
+      const i = PATCHES.indexOf(p);
 
-    const hidePoster = () => {
-        if (posterHidden) return;
-        posterHidden = true;
-        poster.style.opacity = '0';
+      stop.classList.toggle('is-gone', currentIndex >= 0 && i < currentIndex);
+      stop.classList.remove('past', 'current', 'future', 'final');
+      stop.classList.add(patchStatus(p, now));
+      if (i === currentIndex) stop.classList.add('current');
+    });
+  }
+
+  const canvas = $('snow-canvas');
+  const ctx = canvas.getContext('2d');
+  let dpr = 1;
+  let flakes = [];
+  let sparkles = [];
+  let running = true;
+
+  function makeFlake(initial) {
+    return {
+      x: Math.random() * canvas.clientWidth,
+      y: initial ? Math.random() * canvas.clientHeight : -8,
+      r: 0.8 + Math.random() * 2.6,
+      vY: 0.3 + Math.random() * 0.9,
+      amp: 12 + Math.random() * 30,
+      phase: Math.random() * Math.PI * 2,
+      speed: 0.4 + Math.random() * 0.9,
+      opacity: 0.25 + Math.random() * 0.6
     };
+  }
 
-    video.addEventListener('canplay', hidePoster);
-    video.addEventListener('playing', hidePoster);
+  function resizeSnow() {
+    dpr = Math.min(window.devicePixelRatio || 1, 2);
+    canvas.width = Math.floor(window.innerWidth * dpr);
+    canvas.height = Math.floor(window.innerHeight * dpr);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
-    // If video is already loaded, hide poster immediately
-    if (video.readyState >= 3) {
-        hidePoster();
-    }
+    const count = Math.max(40, Math.min(110, Math.round(window.innerWidth / 16)));
+    flakes = Array.from({ length: count }, function () { return makeFlake(true); });
+  }
 
-    const audioBtn = document.getElementById('toggle-audio');
-    let audioPlaying = false;
+  function spawnSparkle() {
+    if (sparkles.length >= 3) return;
+    const size = 10 + Math.random() * 26;
+    sparkles.push({
+      x: Math.random() * canvas.clientWidth,
+      y: Math.random() * canvas.clientHeight * 0.6,
+      size: size,
+      life: 0,
+      maxLife: 160 + Math.random() * 140,
+      rot: Math.random() * Math.PI
+    });
+  }
 
-    // Try to autoplay audio
-    audio.play().then(() => {
-        audioPlaying = true;
-        audioBtn.textContent = '🔇';
-    }).catch(() => {
-        audioPlaying = false;
+  function drawSparkle(s) {
+    const t = s.life / s.maxLife;
+    const alpha = Math.sin(t * Math.PI) * 0.8;
+    const r = s.size * (0.6 + t * 0.6);
+    ctx.save();
+    ctx.translate(s.x, s.y);
+    ctx.rotate(s.rot);
+    ctx.strokeStyle = 'rgba(200, 235, 250, ' + alpha.toFixed(3) + ')';
+    ctx.lineWidth = 1;
+    ctx.shadowColor = 'rgba(126, 200, 227, 0.8)';
+    ctx.shadowBlur = 6;
+    ctx.beginPath();
+    ctx.moveTo(-r, 0);
+    ctx.lineTo(r, 0);
+    ctx.moveTo(0, -r);
+    ctx.lineTo(0, r);
+    ctx.stroke();
+    ctx.restore();
+  }
+
+  function tick() {
+    if (!running) return;
+    ctx.clearRect(0, 0, canvas.clientWidth, canvas.clientHeight);
+
+    flakes.forEach(function (f) {
+      f.phase += f.speed * 0.016;
+      const drift = Math.sin(f.phase) * f.amp * 0.016;
+      f.x += drift;
+      f.y += f.vY * (reduceMotion ? 0.1 : 1);
+
+      if (f.y > canvas.clientHeight + 10) {
+        Object.assign(f, makeFlake(false));
+      }
+      if (f.x > canvas.clientWidth + 20) f.x = -20;
+      if (f.x < -20) f.x = canvas.clientWidth + 20;
+
+      ctx.beginPath();
+      ctx.arc(f.x, f.y, f.r, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(238, 244, 248, ' + f.opacity.toFixed(3) + ')';
+      ctx.fill();
     });
 
-    audioBtn.addEventListener('click', () => {
-        if (audioPlaying) {
-            audio.pause();
-            audioBtn.textContent = '🔊';
-            audioPlaying = false;
-        } else {
-            audio.play().then(() => {
-                audioPlaying = true;
-                audioBtn.textContent = '🔇';
-            });
-        }
+    if (!reduceMotion && Math.random() < 0.02) spawnSparkle();
+
+    sparkles.forEach(function (s) {
+      s.life += 1;
+      drawSparkle(s);
     });
+    sparkles = sparkles.filter(function (s) { return s.life < s.maxLife; });
 
-    const videoBtn = document.getElementById('toggle-video');
-    let videoVisible = true;
+    requestAnimationFrame(tick);
+  }
 
-    videoBtn.addEventListener('click', () => {
-        if (videoVisible) {
-            video.classList.add('hidden');
-            poster.style.opacity = '1';
-        } else {
-            video.classList.remove('hidden');
-            poster.style.opacity = '0';
-        }
-        videoVisible = !videoVisible;
-    });
+  document.addEventListener('visibilitychange', function () {
+    running = !document.hidden;
+    if (running) requestAnimationFrame(tick);
+  });
 
-    setInterval(updateCountdown, 1000);
-    updateCountdown();
-    updateReleaseDate();
-    updateTimeline();
+  window.addEventListener('resize', resizeSnow);
 
-    // Check if user previously enabled audio
-    if (localStorage.getItem('audioEnabled') === 'true') {
-        audio.play().then(() => {
-            audioPlaying = true;
-            audioBtn.textContent = '🔇';
-        }).catch(() => {
-            audioPlaying = false;
-        });
-    }
+  resizeSnow();
+  tick();
 
-    // Save preference when user clicks audio toggle
-    audioBtn.addEventListener('click', () => {
-        localStorage.setItem('audioEnabled', audioPlaying.toString());
-    });
-});
+  updateCountdown();
+  setInterval(updateCountdown, 200);
+
+  buildTimeline();
+  setInterval(refreshTimelineStatus, 60000);
+})();

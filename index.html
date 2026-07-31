@@ -1,113 +1,86 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tsaritsa Countdown</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Countdown to the Tsaritsa — Genshin Impact Patch 7.3, December 16, 2026.">
+  <title>The Tsaritsa — Countdown to Patch 7.3</title>
+  <link rel="icon" href="favicon.ico" type="image/x-icon">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700;900&family=Plus+Jakarta+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-    <div class="poster-overlay" id="poster"></div>
-    
-    <div class="video-bg">
-        <video id="bg-video" autoplay loop playsinline muted>
-            <source src="media/video.mp4" type="video/mp4">
-        </video>
-    </div>
-    
-    <canvas class="snow-canvas" id="snow-canvas"></canvas>
-    <div class="dark-overlay"></div>
-    
-    <div class="content">
-        <h1 class="main-title">Her Majesty The Tsaritsa Arrives In:</h1>
-        
-        <div class="countdown-container">
-            <div class="countdown" id="countdown">
-                <div class="countdown-item">
-                    <span class="countdown-value" id="days">000</span>
-                    <span class="countdown-label">Days</span>
-                </div>
-                <div class="countdown-item">
-                    <span class="countdown-value" id="hours">00</span>
-                    <span class="countdown-label">Hours</span>
-                </div>
-                <div class="countdown-item">
-                    <span class="countdown-value" id="minutes">00</span>
-                    <span class="countdown-label">Minutes</span>
-                </div>
-                <div class="countdown-item">
-                    <span class="countdown-value" id="seconds">00</span>
-                    <span class="countdown-label">Seconds</span>
-                </div>
-            </div>
-            <p class="release-date" id="release-date"></p>
-        </div>
-    </div>
-    
-    <div class="timeline-container">
-        <div class="patch-timeline">
-            <h3 class="timeline-title">Patch Timeline</h3>
-            <div class="timeline-track" id="timeline-track">
-                <div class="timeline-node current">
-                    <div class="node-circle"><div class="node-inner"></div></div>
-                    <span class="node-label">
-                        <span class="patch-version">6.6</span>
-                        <span class="patch-date">May 27</span>
-                    </span>
-                </div>
-                <div class="timeline-node">
-                    <div class="node-circle"><div class="node-inner"></div></div>
-                    <span class="node-label">
-                        <span class="patch-version">6.7</span>
-                        <span class="patch-date">Jul 1</span>
-                    </span>
-                </div>
-                <div class="timeline-node">
-                    <div class="node-circle"><div class="node-inner"></div></div>
-                    <span class="node-label">
-                        <span class="patch-version">7.0</span>
-                        <span class="patch-date">Aug 12</span>
-                    </span>
-                </div>
-                <div class="timeline-node">
-                    <div class="node-circle"><div class="node-inner"></div></div>
-                    <span class="node-label">
-                        <span class="patch-version">7.1</span>
-                        <span class="patch-date">Sep 23</span>
-                    </span>
-                </div>
-                <div class="timeline-node">
-                    <div class="node-circle"><div class="node-inner"></div></div>
-                    <span class="node-label">
-                        <span class="patch-version">7.2</span>
-                        <span class="patch-date">Nov 4</span>
-                    </span>
-                </div>
-                <div class="timeline-node target">
-                    <div class="node-circle"><div class="node-inner"></div></div>
-                    <span class="node-label">
-                        <span class="patch-version">7.3</span>
-                        <span class="patch-date">Dec 16</span>
-                    </span>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <div class="media-controls">
-        <button class="control-btn" id="toggle-audio">🔊</button>
-        <button class="control-btn" id="toggle-video">🎬</button>
-    </div>
 
-    <audio id="background-audio" loop style="display:none;">
-        <source src="media/music.mp3" type="audio/mpeg">
-    </audio>
+  <div id="bg-layer" role="presentation" aria-hidden="true"></div>
+  <div id="bg-overlay" role="presentation" aria-hidden="true"></div>
+  <video id="bg-video" muted autoplay loop playsinline preload="auto" aria-hidden="true" tabindex="-1">
+    <source src="media/video.mp4" type="video/mp4">
+  </video>
+  <canvas id="snow-canvas" role="presentation" aria-hidden="true"></canvas>
 
-    <script src="js/snow.js"></script>
-    <script src="js/main.js"></script>
+  <div id="controls" class="controls">
+    <button id="music-toggle" class="ctrl-btn" type="button" aria-label="Play music" aria-pressed="false">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M9 18V5l12-2v13"></path>
+        <circle cx="6" cy="18" r="3"></circle>
+        <circle cx="18" cy="16" r="3"></circle>
+      </svg>
+    </button>
+    <button id="video-toggle" class="ctrl-btn" type="button" aria-label="Hide video background" aria-pressed="false">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <rect x="2" y="2" width="20" height="20" rx="2.18"></rect>
+        <line x1="7" y1="2" x2="7" y2="22"></line>
+        <line x1="17" y1="2" x2="17" y2="22"></line>
+        <line x1="2" y1="12" x2="22" y2="12"></line>
+      </svg>
+    </button>
+  </div>
+
+  <main id="main-content">
+    <section id="countdown-section" class="countdown-section" aria-label="Countdown to release">
+      <p class="countdown-eyebrow">Her Majesty arrives in</p>
+
+      <div id="countdown" class="countdown" role="timer" aria-label="December 16, 2026, 04:00 UTC">
+        <div class="count-cell">
+          <span id="cd-days" class="count-num">00</span>
+          <span class="count-label">Days</span>
+        </div>
+        <span class="count-sep" aria-hidden="true">:</span>
+        <div class="count-cell">
+          <span id="cd-hours" class="count-num">00</span>
+          <span class="count-label">Hours</span>
+        </div>
+        <span class="count-sep" aria-hidden="true">:</span>
+        <div class="count-cell">
+          <span id="cd-minutes" class="count-num">00</span>
+          <span class="count-label">Minutes</span>
+        </div>
+        <span class="count-sep" aria-hidden="true">:</span>
+        <div class="count-cell">
+          <span id="cd-seconds" class="count-num">00</span>
+          <span class="count-label">Seconds</span>
+        </div>
+      </div>
+
+      <p id="arrived-message" class="arrived" hidden>She has arrived</p>
+
+      <p class="countdown-target">Patch 7.3 · December 16, 2026 · 04:00 UTC <span class="stc">(STC)</span></p>
+    </section>
+
+    <section id="quotes-section" class="quotes-section" aria-label="Words of the Tsaritsa">
+      <blockquote id="quote-text" class="quote-text">…</blockquote>
+      <cite id="quote-attribution" class="quote-attribution">—</cite>
+    </section>
+
+    <section id="timeline-section" class="timeline-section" aria-label="Patch timeline">
+      <div id="timeline" class="patch-road"></div>
+    </section>
+  </main>
+
+  <audio id="bg-music" src="media/music.mp3" loop preload="auto"></audio>
+
+  <script src="js/main.js"></script>
 </body>
 </html>
