@@ -117,19 +117,42 @@
     videoBtn.setAttribute('aria-label', 'Video background unavailable');
   }, true);
 
+  function startMusic() {
+    if (!music.paused) return;
+    music.play().catch(function () {});
+    musicBtn.classList.remove('muted');
+    musicBtn.setAttribute('aria-pressed', 'true');
+    musicBtn.setAttribute('aria-label', 'Pause music');
+  }
+
+  function stopMusic() {
+    music.pause();
+    musicBtn.classList.add('muted');
+    musicBtn.setAttribute('aria-pressed', 'false');
+    musicBtn.setAttribute('aria-label', 'Play music');
+  }
+
   musicBtn.addEventListener('click', function () {
     if (music.paused) {
-      music.play().catch(function () {});
-      musicBtn.classList.remove('muted');
-      musicBtn.setAttribute('aria-pressed', 'true');
-      musicBtn.setAttribute('aria-label', 'Pause music');
+      startMusic();
     } else {
-      music.pause();
-      musicBtn.classList.add('muted');
-      musicBtn.setAttribute('aria-pressed', 'false');
-      musicBtn.setAttribute('aria-label', 'Play music');
+      stopMusic();
     }
   });
+
+  startMusic();
+
+  const startOnInteraction = function () {
+    if (music.paused) startMusic();
+    window.removeEventListener('pointerdown', startOnInteraction);
+    window.removeEventListener('keydown', startOnInteraction);
+    window.removeEventListener('touchstart', startOnInteraction);
+    window.removeEventListener('wheel', startOnInteraction);
+  };
+  window.addEventListener('pointerdown', startOnInteraction);
+  window.addEventListener('keydown', startOnInteraction);
+  window.addEventListener('touchstart', startOnInteraction);
+  window.addEventListener('wheel', startOnInteraction);
 
   videoBtn.addEventListener('click', function () {
     if (videoFailed) return;
