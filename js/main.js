@@ -219,6 +219,33 @@
     '<line x1="20" y1="6.5" x2="4" y2="17.5"/>' +
     '</svg>';
 
+  function daysUntil(targetMs) {
+    return Math.ceil((targetMs - Date.now()) / 86400000);
+  }
+
+  function renderStopDate(stop, p, now) {
+    const date = stop.querySelector('.stop-date');
+    if (!date) return;
+
+    let currentIndex = -1;
+    PATCHES.forEach(function (x, i) {
+      if (x.start <= now) currentIndex = i;
+    });
+    const isCurrent = currentIndex >= 0 && PATCHES[currentIndex] === p;
+    const next = isCurrent ? PATCHES[currentIndex + 1] : null;
+
+    if (isCurrent && p.version !== '7.3' && next) {
+      date.textContent = daysUntil(next.start) + 'd left';
+      return;
+    }
+
+    const d = new Date(p.start);
+    const dateStr = d.toLocaleString('en-US', { month: 'short', day: 'numeric' });
+    date.textContent = p.version === '7.3'
+      ? dateStr + ', ' + d.getFullYear()
+      : dateStr;
+  }
+
   function buildTimeline() {
     timelineEl.innerHTML = '';
 
@@ -245,11 +272,6 @@
 
       const date = document.createElement('span');
       date.className = 'stop-date';
-      const d = new Date(p.start);
-      const dateStr = d.toLocaleString('en-US', { month: 'short', day: 'numeric' });
-      date.textContent = p.version === '7.3'
-        ? dateStr + ', ' + d.getFullYear()
-        : dateStr;
 
       stop.appendChild(version);
       stop.appendChild(dot);
@@ -279,6 +301,7 @@
       stop.classList.remove('past', 'current', 'future', 'final');
       stop.classList.add(patchStatus(p, now));
       if (i === currentIndex) stop.classList.add('current');
+      renderStopDate(stop, p, now);
     });
   }
 
