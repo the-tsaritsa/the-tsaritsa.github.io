@@ -123,6 +123,7 @@ body.video-off #bg-layer {
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   color: var(--text-secondary);
+  text-decoration: none;
   cursor: pointer;
   transition: color 0.35s var(--transition-smooth),
     border-color 0.35s var(--transition-smooth),
@@ -335,16 +336,6 @@ body.video-off #bg-layer {
   pointer-events: auto;
 }
 
-.road-track {
-  position: absolute;
-  top: 30px;
-  left: 9px;
-  right: 9px;
-  height: 2px;
-  background: rgba(238, 244, 248, 0.14);
-  border-radius: 999px;
-}
-
 .road-stops {
   position: relative;
   display: flex;
@@ -352,10 +343,29 @@ body.video-off #bg-layer {
 }
 
 .road-stop {
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 7px;
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+.road-stop::after {
+  content: '';
+  position: absolute;
+  top: 30px;
+  left: calc(50% + 9px);
+  width: calc(100% - 18px);
+  height: 2px;
+  background: rgba(238, 244, 248, 0.14);
+  border-radius: 999px;
+  pointer-events: none;
+}
+
+.road-stop:last-child::after {
+  display: none;
 }
 
 .road-stop.is-gone {

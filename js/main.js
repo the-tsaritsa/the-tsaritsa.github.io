@@ -249,9 +249,6 @@
   function buildTimeline() {
     timelineEl.innerHTML = '';
 
-    const track = document.createElement('div');
-    track.className = 'road-track';
-
     const stops = document.createElement('div');
     stops.className = 'road-stops';
 
@@ -279,7 +276,6 @@
       stops.appendChild(stop);
     });
 
-    timelineEl.appendChild(track);
     timelineEl.appendChild(stops);
     refreshTimelineStatus();
   }
