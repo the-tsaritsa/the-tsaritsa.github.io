@@ -117,19 +117,38 @@
     videoBtn.setAttribute('aria-label', 'Video background unavailable');
   }, true);
 
+  const MUSIC_STATE_KEY = 'tsaritsa-music-on';
+  let musicPrefOn = false;
+  try {
+    musicPrefOn = localStorage.getItem(MUSIC_STATE_KEY) === '1';
+  } catch (e) { /* storage unavailable */ }
+
+  function saveMusicPref(on) {
+    try {
+      localStorage.setItem(MUSIC_STATE_KEY, on ? '1' : '0');
+    } catch (e) { /* storage unavailable */ }
+  }
+
+  function setMusicBtnState(playing) {
+    musicBtn.classList.toggle('muted', !playing);
+    musicBtn.setAttribute('aria-pressed', playing ? 'true' : 'false');
+    musicBtn.setAttribute('aria-label', playing ? 'Pause music' : 'Play music');
+  }
+
   function startMusic() {
     if (!music.paused) return;
-    music.play().catch(function () {});
-    musicBtn.classList.remove('muted');
-    musicBtn.setAttribute('aria-pressed', 'true');
-    musicBtn.setAttribute('aria-label', 'Pause music');
+    setMusicBtnState(true);
+    music.play().then(function () {
+      saveMusicPref(true);
+    }).catch(function () {
+      setMusicBtnState(false);
+    });
   }
 
   function stopMusic() {
     music.pause();
-    musicBtn.classList.add('muted');
-    musicBtn.setAttribute('aria-pressed', 'false');
-    musicBtn.setAttribute('aria-label', 'Play music');
+    setMusicBtnState(false);
+    saveMusicPref(false);
   }
 
   musicBtn.addEventListener('click', function () {
@@ -140,14 +159,29 @@
     }
   });
 
-  startMusic();
+  if (musicPrefOn) {
+    startMusic();
+  } else {
+    setMusicBtnState(false);
+  }
 
-  const startOnInteraction = function () {
-    if (music.paused) startMusic();
+  const removeInteractionListeners = function () {
     window.removeEventListener('pointerdown', startOnInteraction);
     window.removeEventListener('keydown', startOnInteraction);
     window.removeEventListener('touchstart', startOnInteraction);
     window.removeEventListener('wheel', startOnInteraction);
+  };
+
+  const startOnInteraction = function (e) {
+    // Let the button's own click handler own the music toggle,
+    // otherwise this pointerdown would start music and the
+    // subsequent click would pause it again.
+    if (e.target && e.target.closest && e.target.closest('#music-toggle')) {
+      removeInteractionListeners();
+      return;
+    }
+    if (music.paused) startMusic();
+    removeInteractionListeners();
   };
   window.addEventListener('pointerdown', startOnInteraction);
   window.addEventListener('keydown', startOnInteraction);
@@ -158,10 +192,12 @@
     if (videoFailed) return;
     const off = body.classList.toggle('video-off');
     if (off) {
+      video.pause();
       videoBtn.classList.add('muted');
       videoBtn.setAttribute('aria-pressed', 'true');
       videoBtn.setAttribute('aria-label', 'Show video background');
     } else {
+      video.play().catch(function () {});
       videoBtn.classList.remove('muted');
       videoBtn.setAttribute('aria-pressed', 'false');
       videoBtn.setAttribute('aria-label', 'Hide video background');
@@ -202,7 +238,7 @@
 
   quoteOrder = shuffle(QUOTES);
   renderQuote(0);
-  setInterval(cycleQuote, 7000);
+  setInterval(cycleQuote, 12000);
 
   const timelineEl = $('timeline');
 
@@ -252,6 +288,7 @@
     const stops = document.createElement('div');
     stops.className = 'road-stops';
 
+    let prevStop = null;
     PATCHES.forEach(function (p) {
       const stop = document.createElement('div');
       stop.className = 'road-stop';
@@ -270,10 +307,35 @@
       const date = document.createElement('span');
       date.className = 'stop-date';
 
+      // Upcoming-livestream marker (dot + always-visible label), centered
+      // on the connector line segment belonging to the previous stop.
+      if (prevStop) {
+        const live = document.createElement('span');
+        live.className = 'live';
+        live.dataset.version = p.version;
+        live.hidden = true;
+
+        const liveDot = document.createElement('span');
+        liveDot.className = 'live-dot';
+
+        const liveLabel = document.createElement('span');
+        liveLabel.className = 'live-label';
+
+        const liveDays = document.createElement('span');
+        liveDays.className = 'live-days';
+
+        live.appendChild(liveDot);
+        live.appendChild(liveLabel);
+        live.appendChild(liveDays);
+        prevStop.appendChild(live);
+      }
+
       stop.appendChild(version);
       stop.appendChild(dot);
       stop.appendChild(date);
       stops.appendChild(stop);
+
+      prevStop = stop;
     });
 
     timelineEl.appendChild(stops);
@@ -298,6 +360,30 @@
       stop.classList.add(patchStatus(p, now));
       if (i === currentIndex) stop.classList.add('current');
       renderStopDate(stop, p, now);
+    });
+
+    timelineEl.querySelectorAll('.live').forEach(function (live) {
+      const p = PATCHES.find(function (x) { return x.version === live.dataset.version; });
+      if (!p) return;
+      const i = PATCHES.indexOf(p);
+      const liveStart = p.start - 12 * 86400000;
+      // Only the next patch's livestream is shown, and only while upcoming.
+      const isNext = i === currentIndex + 1;
+      if (isNext && liveStart > now) {
+        const a = new Date(now);
+        const b = new Date(liveStart);
+        const days = Math.round((Date.UTC(b.getFullYear(), b.getMonth(), b.getDate()) -
+          Date.UTC(a.getFullYear(), a.getMonth(), a.getDate())) / 86400000);
+        live.querySelector('.live-label').textContent = 'Livestream';
+        live.querySelector('.live-days').textContent = days === 0
+          ? 'Today'
+          : days === 1
+            ? 'Tomorrow'
+            : 'in ' + days + 'd';
+        live.hidden = false;
+      } else {
+        live.hidden = true;
+      }
     });
   }
 
