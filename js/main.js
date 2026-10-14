@@ -7,7 +7,7 @@
     { version: '6.7', start: Date.UTC(2026, 6, 1), note: 'The long winter' },
     { version: '7.0', start: Date.UTC(2026, 7, 12), note: 'Snezhnaya opens' },
     { version: '7.1', start: Date.UTC(2026, 8, 23), note: 'The cold deepens' },
-    { version: '7.2', start: Date.UTC(2026, 10, 4), note: 'Storm gathers' },
+    { version: '7.2', start: Date.UTC(2026, 10, 4), note: 'Storm gathers', label: '7.2 (Beta starts)' },
     { version: '7.3', start: Date.UTC(2026, 11, 16), note: 'The Tsaritsa arrives' }
   ];
 
@@ -296,7 +296,7 @@
 
       const version = document.createElement('span');
       version.className = 'stop-version';
-      version.textContent = p.version;
+      version.textContent = p.label || p.version;
 
       const dot = document.createElement('span');
       dot.className = 'stop-dot';

@@ -378,6 +378,7 @@ body.video-off #bg-layer {
   font-size: 0.8rem;
   line-height: 1;
   letter-spacing: 0.04em;
+  white-space: nowrap;
   color: var(--text-secondary);
   text-shadow:
     0 1px 3px rgba(0, 0, 0, 0.9),
@@ -584,7 +585,7 @@ body.video-off #bg-layer {
   }
 
   .stop-version {
-    font-size: 0.68rem;
+    font-size: 0.6rem;
   }
 
   .stop-date {
