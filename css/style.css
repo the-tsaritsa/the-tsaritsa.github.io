@@ -227,18 +227,6 @@ body.video-off #bg-layer {
   text-shadow: 0 2px 12px rgba(0, 0, 0, 0.9);
 }
 
-.count-sep {
-  font-family: var(--font-mono);
-  font-weight: 700;
-  font-size: clamp(2.75rem, 10vw, 6.5rem);
-  line-height: 1;
-  color: var(--accent-dim);
-  text-shadow:
-    0 1px 3px rgba(0, 0, 0, 0.9),
-    0 2px 24px rgba(0, 0, 0, 0.9);
-  animation: sep-pulse 2.4s ease-in-out infinite;
-}
-
 .arrived {
   font-family: var(--font-display);
   font-weight: 700;
@@ -533,15 +521,6 @@ body.video-off #bg-layer {
   }
 }
 
-@keyframes sep-pulse {
-  0%, 100% {
-    opacity: 0.35;
-  }
-  50% {
-    opacity: 1;
-  }
-}
-
 @keyframes dot-pulse {
   0%, 100% {
     box-shadow: 0 0 6px var(--accent-dim);
@@ -570,10 +549,6 @@ body.video-off #bg-layer {
 @media (max-width: 480px) {
   .countdown {
     gap: 6px;
-  }
-
-  .count-sep {
-    margin-top: 0;
   }
 
   .count-label {
