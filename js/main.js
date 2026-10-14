@@ -7,7 +7,7 @@
     { version: '6.7', start: Date.UTC(2026, 6, 1), note: 'The long winter' },
     { version: '7.0', start: Date.UTC(2026, 7, 12), note: 'Snezhnaya opens' },
     { version: '7.1', start: Date.UTC(2026, 8, 23), note: 'The cold deepens' },
-    { version: '7.2', start: Date.UTC(2026, 10, 4), note: 'Storm gathers', label: '7.2 (Beta starts)' },
+    { version: '7.2', start: Date.UTC(2026, 10, 4), note: 'Storm gathers', tag: 'Beta Starts' },
     { version: '7.3', start: Date.UTC(2026, 11, 16), note: 'The Tsaritsa arrives' }
   ];
 
@@ -296,7 +296,7 @@
 
       const version = document.createElement('span');
       version.className = 'stop-version';
-      version.textContent = p.label || p.version;
+      version.textContent = p.version;
 
       const dot = document.createElement('span');
       dot.className = 'stop-dot';
@@ -333,6 +333,12 @@
       stop.appendChild(version);
       stop.appendChild(dot);
       stop.appendChild(date);
+      if (p.tag) {
+        const tag = document.createElement('span');
+        tag.className = 'stop-note';
+        tag.textContent = p.tag;
+        stop.appendChild(tag);
+      }
       stops.appendChild(stop);
 
       prevStop = stop;
@@ -396,7 +402,7 @@
       x: Math.random() * canvas.clientWidth,
       y: initial ? Math.random() * canvas.clientHeight : -8,
       r: 0.8 + Math.random() * 2.6,
-      vY: 0.3 + Math.random() * 0.9,
+      vY: 0.5 + Math.random() * 1.2,
       amp: 12 + Math.random() * 30,
       phase: Math.random() * Math.PI * 2,
       speed: 0.4 + Math.random() * 0.9,
@@ -487,14 +493,15 @@
   }
 
   document.addEventListener('visibilitychange', function () {
+    const wasRunning = running;
     running = !document.hidden;
-    if (running) requestAnimationFrame(tick);
+    if (running && !wasRunning) requestAnimationFrame(tick);
   });
 
   window.addEventListener('resize', resizeSnow);
 
   resizeSnow();
-  tick();
+  requestAnimationFrame(tick);
 
   updateCountdown();
   setInterval(updateCountdown, 200);

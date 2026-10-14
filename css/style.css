@@ -96,6 +96,8 @@ body.video-off #bg-layer {
 #snow-canvas {
   position: fixed;
   inset: 0;
+  width: 100%;
+  height: 100%;
   z-index: 4;
   pointer-events: none;
 }
@@ -186,7 +188,7 @@ body.video-off #bg-layer {
 .countdown {
   display: flex;
   align-items: flex-start;
-  gap: clamp(8px, 2.4vw, 26px);
+  gap: clamp(12px, 2.6vw, 34px);
 }
 
 .countdown[hidden] {
@@ -225,6 +227,15 @@ body.video-off #bg-layer {
   text-transform: uppercase;
   color: var(--text-muted);
   text-shadow: 0 2px 12px rgba(0, 0, 0, 0.9);
+}
+
+.count-sep {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: clamp(2.75rem, 10vw, 6.5rem);
+  line-height: 1;
+  color: var(--accent-dim);
+  animation: sep-pulse 3.2s ease-in-out infinite;
 }
 
 .arrived {
@@ -314,7 +325,7 @@ body.video-off #bg-layer {
   width: 100%;
   display: flex;
   justify-content: center;
-  padding: 0 24px 12px;
+  padding: 0 24px 6px;
   pointer-events: none;
 }
 
@@ -407,8 +418,20 @@ body.video-off #bg-layer {
   transition: color 0.6s var(--transition-smooth);
 }
 
+.stop-note {
+  font-size: 0.58rem;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+  white-space: nowrap;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9);
+  transition: color 0.6s var(--transition-smooth);
+}
+
 .road-stop.past .stop-version,
-.road-stop.past .stop-date {
+.road-stop.past .stop-date,
+.road-stop.past .stop-note {
   color: var(--text-muted);
 }
 
@@ -418,7 +441,8 @@ body.video-off #bg-layer {
 }
 
 .road-stop.current .stop-version,
-.road-stop.current .stop-date {
+.road-stop.current .stop-date,
+.road-stop.current .stop-note {
   color: var(--text-primary);
 }
 
@@ -521,6 +545,15 @@ body.video-off #bg-layer {
   }
 }
 
+@keyframes sep-pulse {
+  0%, 100% {
+    opacity: 0.35;
+  }
+  50% {
+    opacity: 0.9;
+  }
+}
+
 @keyframes dot-pulse {
   0%, 100% {
     box-shadow: 0 0 6px var(--accent-dim);
@@ -548,7 +581,7 @@ body.video-off #bg-layer {
 
 @media (max-width: 480px) {
   .countdown {
-    gap: 6px;
+    gap: 8px;
   }
 
   .count-label {
