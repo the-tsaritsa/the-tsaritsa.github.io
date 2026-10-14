@@ -102,7 +102,7 @@
   video.addEventListener('canplaythrough', showVideo);
   video.addEventListener('playing', showVideo);
   video.addEventListener('canplay', function () {
-    if (video.paused) {
+    if (video.paused && !body.classList.contains('video-off')) {
       video.play().catch(function () {});
     }
   });
@@ -118,14 +118,24 @@
   }, true);
 
   const MUSIC_STATE_KEY = 'tsaritsa-music-on';
+  const VIDEO_STATE_KEY = 'tsaritsa-video-on';
+
   let musicPrefOn = false;
+  let videoPrefOn = true;
   try {
     musicPrefOn = localStorage.getItem(MUSIC_STATE_KEY) === '1';
+    videoPrefOn = localStorage.getItem(VIDEO_STATE_KEY) !== '0';
   } catch (e) { /* storage unavailable */ }
 
   function saveMusicPref(on) {
     try {
       localStorage.setItem(MUSIC_STATE_KEY, on ? '1' : '0');
+    } catch (e) { /* storage unavailable */ }
+  }
+
+  function saveVideoPref(on) {
+    try {
+      localStorage.setItem(VIDEO_STATE_KEY, on ? '1' : '0');
     } catch (e) { /* storage unavailable */ }
   }
 
@@ -159,38 +169,25 @@
     }
   });
 
+  if (!videoPrefOn) {
+    body.classList.add('video-off');
+    video.removeAttribute('autoplay');
+    video.pause();
+    videoBtn.classList.add('muted');
+    videoBtn.setAttribute('aria-pressed', 'true');
+    videoBtn.setAttribute('aria-label', 'Show video background');
+  }
+
   if (musicPrefOn) {
     startMusic();
   } else {
     setMusicBtnState(false);
   }
 
-  const removeInteractionListeners = function () {
-    window.removeEventListener('pointerdown', startOnInteraction);
-    window.removeEventListener('keydown', startOnInteraction);
-    window.removeEventListener('touchstart', startOnInteraction);
-    window.removeEventListener('wheel', startOnInteraction);
-  };
-
-  const startOnInteraction = function (e) {
-    // Let the button's own click handler own the music toggle,
-    // otherwise this pointerdown would start music and the
-    // subsequent click would pause it again.
-    if (e.target && e.target.closest && e.target.closest('#music-toggle')) {
-      removeInteractionListeners();
-      return;
-    }
-    if (music.paused) startMusic();
-    removeInteractionListeners();
-  };
-  window.addEventListener('pointerdown', startOnInteraction);
-  window.addEventListener('keydown', startOnInteraction);
-  window.addEventListener('touchstart', startOnInteraction);
-  window.addEventListener('wheel', startOnInteraction);
-
   videoBtn.addEventListener('click', function () {
     if (videoFailed) return;
     const off = body.classList.toggle('video-off');
+    saveVideoPref(!off);
     if (off) {
       video.pause();
       videoBtn.classList.add('muted');
