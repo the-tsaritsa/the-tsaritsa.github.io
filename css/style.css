@@ -288,10 +288,10 @@ body.video-off #bg-layer {
     0 2px 12px rgba(0, 0, 0, 0.85),
     0 4px 30px rgba(0, 0, 0, 0.9);
   transition: opacity 0.8s var(--transition-smooth);
-  height: 5.1em;
+  height: 6.8em;
   display: -webkit-box;
   -webkit-box-orient: vertical;
-  -webkit-line-clamp: 3;
+  -webkit-line-clamp: 4;
   overflow: hidden;
 }
 

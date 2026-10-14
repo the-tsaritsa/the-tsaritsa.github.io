@@ -276,7 +276,7 @@
     }
 
     const d = new Date(p.start);
-    const dateStr = d.toLocaleString('en-US', { month: 'short', day: 'numeric' });
+    const dateStr = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: 'UTC' });
     date.textContent = p.version === '7.3'
       ? dateStr + ', ' + d.getFullYear()
       : dateStr;
@@ -370,10 +370,7 @@
       // Only the next patch's livestream is shown, and only while upcoming.
       const isNext = i === currentIndex + 1;
       if (isNext && liveStart > now) {
-        const a = new Date(now);
-        const b = new Date(liveStart);
-        const days = Math.round((Date.UTC(b.getFullYear(), b.getMonth(), b.getDate()) -
-          Date.UTC(a.getFullYear(), a.getMonth(), a.getDate())) / 86400000);
+        const days = Math.round((liveStart - now) / 86400000);
         live.querySelector('.live-label').textContent = 'Livestream';
         live.querySelector('.live-days').textContent = days === 0
           ? 'Today'
@@ -450,15 +447,21 @@
     ctx.restore();
   }
 
-  function tick() {
+  let lastTs = 0;
+
+  function tick(ts) {
     if (!running) return;
+    if (!lastTs) lastTs = ts;
+    const dt = Math.min((ts - lastTs) / 16.667, 3);
+    lastTs = ts;
+
     ctx.clearRect(0, 0, canvas.clientWidth, canvas.clientHeight);
 
     flakes.forEach(function (f) {
-      f.phase += f.speed * 0.016;
-      const drift = Math.sin(f.phase) * f.amp * 0.016;
+      f.phase += f.speed * dt * 0.016;
+      const drift = Math.sin(f.phase) * f.amp * 0.016 * dt;
       f.x += drift;
-      f.y += f.vY * (reduceMotion ? 0.1 : 1);
+      f.y += f.vY * dt * (reduceMotion ? 0.1 : 1);
 
       if (f.y > canvas.clientHeight + 10) {
         Object.assign(f, makeFlake(false));
